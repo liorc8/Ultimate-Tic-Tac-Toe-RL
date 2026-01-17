@@ -31,6 +31,16 @@ class SmallBoard:
                     moves.append((r, c))
         return moves
 
+    def is_empty(self, row, col):
+        """Return True if (row, col) is inside bounds and currently EMPTY."""
+        if not (0 <= row < 3 and 0 <= col < 3):
+            raise ValueError("Move out of bounds")
+        return self.board[row][col] == self.EMPTY
+
+    def is_open(self):
+        """Return True if this small board can still accept moves."""
+        return self.status == self.ONGOING
+
     def make_move(self, row, col):
         """Place the current player's mark on the board at (row, col)
         
