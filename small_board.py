@@ -32,16 +32,28 @@ class SmallBoard:
         return moves
 
     def make_move(self, row, col):
-        """Place the current player's mark on the board at (row, col) if the move is legal.
+        """Place the current player's mark on the board at (row, col)
         
         Args:
             row (int): The row index (0-2).
             col (int): The column index (0-2).
-        Raises:
-            ValueError: If the move is illegal.
+        """
+        self.place_mark(row, col, self.player)
+        if self.status == self.ONGOING:
+            self.player = self.other_player(self.player)
+
+    def place_mark(self, row, col, player):
+        """
+        Place a specific player's mark (X/O) at (row, col).
+        This does NOT change turns. Intended for UltimateBoard (global turn).
+
+        Args:
+            row (int): The row index (0-2).
+            col (int): The column index (0-2).
+            player (str): The player making the move ('X' or 'O').
         """
         if self.status != self.ONGOING:
-            raise ValueError("Game is already over")
+            raise ValueError("Board is already over")
 
         if not (0 <= row < 3 and 0 <= col < 3):
             raise ValueError("Move out of bounds")
@@ -49,10 +61,11 @@ class SmallBoard:
         if self.board[row][col] != self.EMPTY:
             raise ValueError("Cell is not empty")
 
-        self.board[row][col] = self.player
+        if player not in (self.X, self.O):
+            raise ValueError("Invalid player")
+
+        self.board[row][col] = player
         self.winning_move()
-        if self.status == self.ONGOING:
-            self.player = self.other_player(self.player)
 
     def unmake_move(self, row, col):
         """Remove the mark from the board at (row, col) and revert the player turn.
@@ -137,5 +150,5 @@ def play_tow_players():
         print("\n🤝 Draw!")
 
 if __name__ == "__main__":
-    play_human_vs_human()
+    play_tow_players()
 
