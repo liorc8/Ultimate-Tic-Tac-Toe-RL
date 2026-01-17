@@ -1,3 +1,4 @@
+import random
 class SmallBoard:
     # Player constants
     X = 'X'
@@ -110,4 +111,31 @@ class SmallBoard:
             rows.append('|'.join(self.board[r]))
         return '\n-----\n'.join(rows)
     
+
+def play_tow_players():
+    game = SmallBoard()
+
+    while game.status == game.ONGOING:
+        print("\n" + str(game))
+        print(f"\nTurn: {game.player}")
+        raw = input("Enter move as 'row col' (0-2 0-2): ").strip()
+
+        try:
+            row_s, col_s = raw.split()
+            row, col = int(row_s), int(col_s)
+            game.make_move(row, col)
+        except ValueError as e:
+            print(f"❌ {e}")
+            continue
+
+    print("\n" + str(game))
+    if game.status == game.X_WIN:
+        print("\n🏆 X wins!")
+    elif game.status == game.O_WIN:
+        print("\n🏆 O wins!")
+    else:
+        print("\n🤝 Draw!")
+
+if __name__ == "__main__":
+    play_human_vs_human()
 
