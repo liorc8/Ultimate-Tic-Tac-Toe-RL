@@ -9,6 +9,7 @@ class UltimateBoard:
         self.game_status = SmallBoard.ONGOING
         self.active_board = None
 
+
     def clone(self):
         """
         Return a deep copy of the ultimate board."""
@@ -52,6 +53,37 @@ class UltimateBoard:
                         moves.append((br, bc, sr, sc))
 
         return moves
+
+
+    def is_terminal(self):
+        """Return True if the ultimate game is finished (win or draw)."""
+        return self.game_status != SmallBoard.ONGOING
+
+
+    def result(self):
+        """Return the current game result/status (X_WIN, O_WIN, DRAW, or ONGOING)."""
+        return self.game_status
+
+
+    def value_for(self, player):
+        """
+        Return the terminal value from the perspective of `player`:
+        +1 if `player` wins, -1 if `player` loses, 0 for draw or non-terminal.
+        """
+        if self.game_status == SmallBoard.ONGOING:
+            return 0
+
+        if self.game_status == SmallBoard.DRAW:
+            return 0
+
+        if self.game_status == SmallBoard.X_WIN:
+            return 1 if player == SmallBoard.X else -1
+
+        if self.game_status == SmallBoard.O_WIN:
+            return 1 if player == SmallBoard.O else -1
+
+        # Safety fallback (shouldn't happen)
+        return 0
 
 
     def make_move(self, br, bc, sr, sc):
@@ -98,7 +130,7 @@ class UltimateBoard:
         if sb.status == SmallBoard.O_WIN:
             return SmallBoard.O
         return SmallBoard.EMPTY
-        
+
 
     def update_status(self):
         """
@@ -131,7 +163,6 @@ class UltimateBoard:
         self.game_status = SmallBoard.DRAW if all_closed else SmallBoard.ONGOING
 
 
-
     def set_next_active_board(self, sr, sc):
         """
         Set the next active small board based on last move's (sr, sc).
@@ -144,6 +175,7 @@ class UltimateBoard:
             self.active_board = (sr, sc)
         else:
             self.active_board = None
+
 
     def __str__(self):
         def small_row_to_str(sb, r):
