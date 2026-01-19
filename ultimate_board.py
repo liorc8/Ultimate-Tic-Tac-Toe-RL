@@ -149,40 +149,5 @@ class UltimateBoard:
         return "\n".join(lines)
 
 
-def run_ultimate_cli_game():
-    game = UltimateBoard()
-
-    while game.game_status == SmallBoard.ONGOING:
-        print("\n" + str(game))
-        print(f"\nTurn: {game.current_player}")
-
-        if game.active_board is None:
-            print("You can play in ANY open small board.")
-        else:
-            print(f"You MUST play in small board: {game.active_board} (br bc)")
-
-        raw = input("Enter move as 'br bc sr sc' (0-2 0-2 0-2 0-2): ").strip()
-
-        try:
-            br_s, bc_s, sr_s, sc_s = raw.split()
-            br, bc, sr, sc = int(br_s), int(bc_s), int(sr_s), int(sc_s)
-            game.make_move(br, bc, sr, sc)
-        except ValueError as e:
-            print(f"❌ {e}")
-            continue
-
-    print("\n" + str(game))
-    if game.game_status == SmallBoard.X_WIN:
-        print("\n🏆 X wins the Ultimate game!")
-    elif game.game_status == SmallBoard.O_WIN:
-        print("\n🏆 O wins the Ultimate game!")
-    else:
-        print("\n🤝 Ultimate game ended in a draw!")
-
-
-if __name__ == "__main__":
-    run_ultimate_cli_game()
-
-
 
 
