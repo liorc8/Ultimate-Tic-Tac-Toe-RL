@@ -9,6 +9,24 @@ class UltimateBoard:
         self.game_status = SmallBoard.ONGOING
         self.active_board = None
 
+    def clone(self):
+        """
+        Return a deep copy of the ultimate board."""
+        cloned = UltimateBoard()
+
+        cloned.boards = [
+            [self.boards[r][c].clone() for c in range(3)]
+            for r in range(3)
+        ]
+
+        cloned.current_player = self.current_player
+        cloned.game_status = self.game_status
+
+        cloned.active_board = None if self.active_board is None else (self.active_board[0], self.active_board[1])
+
+        return cloned
+
+
     def legal_moves(self):
         """
         Return a list of all legal moves as (br, bc, sr, sc).
