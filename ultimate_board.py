@@ -1,4 +1,6 @@
 from small_board import SmallBoard
+from codec import encode_action, decode_action
+
 
 class UltimateBoard:
     
@@ -114,6 +116,21 @@ class UltimateBoard:
         if self.game_status == SmallBoard.ONGOING:
             self.set_next_active_board(sr, sc)
             self.current_player = SmallBoard.O if self.current_player == SmallBoard.X else SmallBoard.X
+
+
+    def apply_action(self, action):
+        """
+        Apply an encoded action (0..80) by decoding it and calling make_move.
+        """
+        br, bc, sr, sc = decode_action(action)
+        self.make_move(br, bc, sr, sc)
+
+
+    def legal_actions(self):
+        """
+        Return legal moves as encoded actions in [0, 80].
+        """
+        return [encode_action(br, bc, sr, sc) for (br, bc, sr, sc) in self.legal_moves()]
 
 
     def meta_cell(self, br, bc):
