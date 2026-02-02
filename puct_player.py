@@ -4,7 +4,7 @@ from puct_node import PUCTNode
 from encoder import encode_state
 from action_mask import legal_action_mask
 from small_board import SmallBoard
-
+from value_target import terminal_value
 
 class PUCTPlayer:
     def __init__(self, network, c_puct=1.0):
@@ -69,6 +69,73 @@ class PUCTPlayer:
         )[0]
 
         return best_action
+    
+    def choose_move_with_pi(self, game, simulations: int):
+        """
+        Like choose_move(), but also returns pi (visit distribution) for training.
+
+        Returns:
+            best_action: int (0..80)
+            pi: np.ndarray shape (81,), sums to 1.0
+        """
+        root = PUCTNode(parent=None, move=None, prior=0.0)
+
+        for _ in range(simulations):
+            node = root
+            scratch = game.clone()
+
+            # -------- 1) SELECTION --------
+            while node.children:
+                node = self._select_child_with_tiebreak(node)  # you added this
+                scratch.apply_action(node.move)
+
+            # -------- 2) EXPANSION + EVALUATION --------
+            if scratch.is_terminal():
+                value = terminal_value(scratch)
+            else:
+                state = encode_state(scratch)
+                policy, value = self.network.predict(state)
+
+                mask = legal_action_mask(scratch)
+                policy = policy * mask
+
+                s = float(np.sum(policy))
+                if s > 0.0:
+                    policy = policy / s
+                else:
+                    policy = np.zeros_like(policy, dtype=np.float32)
+                    legal = scratch.legal_actions()
+                    for a in legal:
+                        policy[a] = 1.0 / len(legal)
+
+                for a in scratch.legal_actions():
+                    node.children[a] = PUCTNode(parent=node, move=a, prior=float(policy[a]))
+
+            # -------- 3) BACKPROP --------
+            self._backpropagate(node, value)
+
+        if not root.children:
+            raise RuntimeError("PUCT root has no children (is the game terminal?)")
+
+        # Build pi from root visit counts
+        pi = np.zeros(81, dtype=np.float32)
+        total_visits = 0
+
+        for action, child in root.children.items():
+            pi[action] = float(child.N)
+            total_visits += child.N
+
+        if total_visits > 0:
+            pi /= float(total_visits)
+        else:
+            # extremely unlikely, but keep it safe:
+            legal = game.legal_actions()
+            for a in legal:
+                pi[a] = 1.0 / len(legal)
+
+        best_action = int(np.argmax(pi))
+        return best_action, pi
+
 
     def _backpropagate(self, node, value):
         """
