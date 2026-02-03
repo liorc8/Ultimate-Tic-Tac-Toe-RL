@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import random
 from small_board import SmallBoard
 
@@ -97,3 +98,82 @@ class MCTSPlayer:
 
         best_move = max(root.children.items(), key=lambda item: item[1].N)[0]
         return best_move
+    
+
+    def choose_move_with_pi(self, game, iterations):
+        """
+        MCTS loop that returns:
+        - best_action: most visited action at root
+        - pi: visit distribution over 81 actions (from root children visit counts)
+
+        Works with UltimateBoard API:
+        - clone()
+        - legal_actions()
+        - apply_action(action)
+        - is_terminal()
+        - game_status (SmallBoard.X_WIN / O_WIN / DRAW / ONGOING)
+        - current_player ('X' or 'O')
+        """
+
+        root = MCTSNode(parent=None, move=None, untried_moves=game.legal_actions())
+        root_player = game.current_player  # perspective for win counting at root
+
+        for _ in range(iterations):
+            node = root
+            scratch = game.clone()
+
+            # ---------- Selection ----------
+            while (node.untried_moves is not None and len(node.untried_moves) == 0) and node.children and (not scratch.is_terminal()):
+                node = node.best_child()
+                scratch.apply_action(node.move)
+
+            # ---------- Expansion ----------
+            if node.untried_moves and (not scratch.is_terminal()):
+                move = node.untried_moves.pop()
+                scratch.apply_action(move)
+
+                child = MCTSNode(
+                    parent=node,
+                    move=move,
+                    untried_moves=scratch.legal_actions()
+                )
+                node.children[move] = child
+                node = child
+
+            # ---------- Simulation (rollout) ----------
+            while not scratch.is_terminal():
+                move = random.choice(scratch.legal_actions())
+                scratch.apply_action(move)
+
+            # ---------- Backprop ----------
+            result = scratch.game_status  # terminal status
+            cur = node
+            while cur is not None:
+                cur.N += 1
+                if result == SmallBoard.DRAW:
+                    cur.Q += 0.5
+                elif result == SmallBoard.X_WIN:
+                    cur.Q += 1.0 if root_player == SmallBoard.X else 0.0
+                elif result == SmallBoard.O_WIN:
+                    cur.Q += 1.0 if root_player == SmallBoard.O else 0.0
+                cur = cur.parent
+
+        # ---------- Build pi from root visit counts ----------
+        pi = np.zeros(81, dtype=np.float32)
+        total = 0
+
+        for action, child in root.children.items():
+            pi[action] = float(child.N)
+            total += child.N
+
+        if total > 0:
+            pi /= float(total)
+        else:
+            # fallback: uniform over legal actions (should be rare)
+            legal = game.legal_actions()
+            for a in legal:
+                pi[a] = 1.0 / len(legal)
+
+        best_action = int(np.argmax(pi))
+        return best_action, pi
+
