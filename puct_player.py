@@ -56,7 +56,7 @@ class PUCTPlayer:
                     )
             else:
                 # Terminal node
-                value = self._terminal_value(scratch, game.current_player)
+                value = terminal_value(scratch)
 
             # 3) BACKPROPAGATION
             self._backpropagate(node, value)
@@ -133,8 +133,9 @@ class PUCTPlayer:
             for a in legal:
                 pi[a] = 1.0 / len(legal)
 
-        best_action = int(np.argmax(pi))
+        best_action = np.random.choice(81, p=pi)
         return best_action, pi
+
 
 
     def _backpropagate(self, node, value):
