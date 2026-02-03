@@ -1,5 +1,5 @@
 from small_board import SmallBoard
-from codec import encode_action, decode_action
+from src.codec import encode_action, decode_action
 
 
 class UltimateBoard:
