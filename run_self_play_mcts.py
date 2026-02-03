@@ -1,4 +1,4 @@
-from self_play_mcts import MCTSSelfPlay, save_dataset
+from src.self_play_mcts import MCTSSelfPlay, save_dataset
 
 if __name__ == "__main__":
     generator = MCTSSelfPlay(iterations=200)
