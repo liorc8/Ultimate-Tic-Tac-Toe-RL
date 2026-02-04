@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from src.game_network import GameNetwork
+from game_network import GameNetwork
 class TrainedNetwork:
     def __init__(self, model_path: str, device: str = "cpu"):
         self.device = device

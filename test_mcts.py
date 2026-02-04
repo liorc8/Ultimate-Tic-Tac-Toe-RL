@@ -24,9 +24,9 @@ import random
 from dataclasses import dataclass
 from typing import Callable, Optional, Tuple, Dict
 
-from src.ultimate_board import UltimateBoard
-from src.small_board import SmallBoard
-from src.mcts import MCTSPlayer
+from ultimate_board import UltimateBoard
+from small_board import SmallBoard
+from mcts import MCTSPlayer
 
 
 # -----------------------------

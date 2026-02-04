@@ -2,10 +2,10 @@ import numpy as np
 from ultimate_board import UltimateBoard
 from small_board import SmallBoard
 
-from src.encoder import encode_state
+from encoder import encode_state
 from value_target import terminal_value
-from src.puct_player import PUCTPlayer
-from src.game_network import GameNetwork
+from puct_player import PUCTPlayer
+from game_network import GameNetwork
 
 
 class SelfPlayGenerator:

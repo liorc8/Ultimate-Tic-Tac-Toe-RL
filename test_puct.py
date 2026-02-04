@@ -3,10 +3,10 @@ import random
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from src.ultimate_board import UltimateBoard
-from src.small_board import SmallBoard
-from src.game_network import GameNetwork
-from src.puct_player import PUCTPlayer
+from ultimate_board import UltimateBoard
+from small_board import SmallBoard
+from game_network import GameNetwork
+from puct_player import PUCTPlayer
 
 
 # -----------------------------

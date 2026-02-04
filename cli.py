@@ -1,5 +1,5 @@
-from src.small_board import SmallBoard
-from src.ultimate_board import UltimateBoard
+from small_board import SmallBoard
+from ultimate_board import UltimateBoard
 
 
 def play_small_board_cli():
