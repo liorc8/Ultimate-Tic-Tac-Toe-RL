@@ -1,4 +1,4 @@
-from src.self_play import SelfPlayGenerator, save_dataset
+from self_play import SelfPlayGenerator, save_dataset
 
 if __name__ == "__main__":
     generator = SelfPlayGenerator(

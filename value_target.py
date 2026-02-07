@@ -1,10 +1,15 @@
 from ultimate_board import UltimateBoard
+from small_board import SmallBoard
 
-def terminal_value(game) -> float:
+def terminal_value(game: UltimateBoard) -> float:
     """
-    Terminal value from the perspective of the CURRENT player to move.
-    +1 win, 0 draw, -1 loss
+    Return the terminal value from the perspective of the player who would be
+    next to move.
+    Returns:
+        +1.0 for win, 0.0 draw, -1.0 loss (from the perspective of the next player).
     """
     if not game.is_terminal():
         raise ValueError("terminal_value called on non-terminal state")
-    return float(game.value_for(game.current_player))
+
+    next_player = SmallBoard.O if game.current_player == SmallBoard.X else SmallBoard.X
+    return float(game.value_for(next_player))

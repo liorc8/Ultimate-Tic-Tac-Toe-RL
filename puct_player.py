@@ -133,7 +133,7 @@ class PUCTPlayer:
             for a in legal:
                 pi[a] = 1.0 / len(legal)
 
-        best_action = np.random.choice(81, p=pi)
+        best_action = int(np.argmax(pi))
         return best_action, pi
 
 
